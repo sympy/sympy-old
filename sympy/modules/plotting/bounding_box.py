@@ -4,11 +4,11 @@ from plot_function import PlotFunction
 
 class BoundingBox(PlotObject):
     
-    def __init__(self):
+    def __init__(self, color=(0.7,0.75,0.8)):
         self.x_min, self.x_max = 0.0, 0.0
         self.y_min, self.y_max = 0.0, 0.0
         self.z_min, self.z_max = 0.0, 0.0
-        self.color = (0.7,0.75,0.8)
+        self.color = color
 
     def consider_function(self, f):
         self.x_min = min([self.x_min, f.x_min])

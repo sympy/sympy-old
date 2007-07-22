@@ -1,7 +1,8 @@
 from pyglet.gl import *
-from plot_function import PlotFunction, fsubs, vrange
+from plot_function import PlotFunction, vrange, fsubs
+from math import sin, cos
 
-class CartesianFunction2d(PlotFunction):
+class PolarFunction2d(PlotFunction):
     
     def __init__(self, f, intervals, options):
         self.f = f
@@ -9,21 +10,28 @@ class CartesianFunction2d(PlotFunction):
         self.options = options
         self.calculate_vertices()
         self.calculate_color_vertices()
-        
+
     def calculate_vertices(self):
         if len(self.intervals) != 1:
             raise NotImplementedError("Automatic intervals not implemented.")
 
-        x, x_min, x_max, x_steps = self.intervals[0]
-        if x_steps == None: x_steps = 60
+        t, t_min, t_max, t_steps = self.intervals[0]
+        if t_steps == None: t_steps = 60
 
-        x_set = vrange(x_min, x_max, x_steps)
-        self.vertices = list( (x_e, fsubs(self.f, x, x_e), 0.0) for x_e in x_set )
+        t_set = vrange(t_min, t_max, t_steps)
+
+        def polar_fsubs(f, t, _t):
+            r = fsubs(f, t, _t)
+            if r == None:
+                return (None, None, None)
+            return (r*cos(_t), r*sin(_t), 0.0)
+
+        self.vertices = list( polar_fsubs(self.f, t, _t) for _t in t_set )
 
     def calculate_color_vertices(self):
         self.color_vertices = []
         for x, y, z in self.vertices:
-            self.color_vertices.append( (0.7,0.75,0.8) )
+            self.color_vertices.append( (0.5,0.5,1.0) )
 
     def render(self):
         glBegin(GL_LINE_STRIP)

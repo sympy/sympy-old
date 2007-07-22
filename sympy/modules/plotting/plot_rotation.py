@@ -46,6 +46,7 @@ def get_spherical_rotatation(p1, p2, width, height, theta_multiplier):
 
     raxis = norm( cross(v1, v2) )
     rtheta = theta_multiplier * rad2deg * acos(d)
+    #rtheta = 2.0 * rad2deg * acos(d)
 
     glPushMatrix()
     glLoadIdentity()

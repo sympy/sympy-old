@@ -9,30 +9,32 @@ import sys
 sys.path.append("..")
 
 from time import sleep
-from sympy import Symbol, sin, cos
+from sympy import Symbol, sin, cos, log, pi, sqrt
 from sympy.modules.plotting import Plot
 
 x, y = Symbol('x'), Symbol('y')
 
 if __name__ == "__main__":
 
-    p = Plot(width = 500, height = 450,
+    p = Plot(width  = 500, #800,
+             height = 400, #800,
              grid = 'xy',
              bounding_box = False,
              wireframe = False,
              ortho = False)
              #ortho = True)
 
-    #p[1] = x, [x,-3,3,2]
-    #p[2] = 1/x, [x,-3,3]
-    #p[3] =  x**2, [x,-3,3]
-    #p[4] = -x**2, [x,-3,3]
-    #p[5] =  x**2 + y**2, [x,-1,1], [y,-1,1]
-    #p[6] = -x**2 - y**2, [x,-1,1], [y,-1,1]
-    #p[7] = sin(x), cos(x), [x, 0, 6.282], 'mode=parametric;visible=false'
-    #p[8] = sin(x)/2, x/5.0, cos(x)/2, [x, -3.14, 3.14, 20], 'mode=parametric'
-    #p[9] = x*y**3-y*x**3, [x,-1,1], [y,-1,1]
-    p[10] =  1 - x**2 + y**2, [x,-1,1], [y,-1,1]
-    p[11] = -1 + x**2 - y**2, [x,-1,1], [y,-1,1]
-    #p[12] = x*y, [x,-1,1], [y,-1,1]
-    #p[13] =  x**2 + y**2, [x,-1,1,4], [y,-1,1,4]
+    #p[1]  =  1/x, [x,-3,3]
+    #p[2]  =  x**2, [x,-3,3]
+    #p[3]  =  x**2 + y**2, [x,-1,1,10], [y,-1,1,10]
+    #p[4]  = -x**2 - y**2, [x,-1,1,10], [y,-1,1,10]
+    #p[5]  = sin(x),x/10.0,cos(x), [x,-pi*4,pi*4,100], 'mode=parametric'
+    #p[6]  = x*y**3-y*x**3, [x,-1,1], [y,-1,1]
+    #p[7]  =  1 - x**2 + y**2, [x,-1,1], [y,-1,1]
+    #p[8]  = -1 + x**2 - y**2, [x,-1,1], [y,-1,1]
+    #p[9]  = 1.0, [x,0,2*pi,60], 'mode=polar'
+    #p[10] = 1, [x,0,2*pi], [y,-2,2,20], 'mode=polar'
+    #p[11] = -1/(x**2 + y**2), [x,-1,1], [y,-1,1]
+    #p[12] = sin(x*y), [x,-6.282,6.282,50], [y,-6.282,6.282,50]
+    p[13] = 1, [x,0,2*pi,20], [y,0,pi,20], 'mode=spherical'
+    p[14] = 1/y, [x,0,6.282], [y,-1,1,6], 'mode=polar'
