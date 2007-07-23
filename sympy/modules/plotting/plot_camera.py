@@ -1,5 +1,6 @@
 from pyglet.gl import *
 from plot_rotation import get_spherical_rotatation
+from util import get_matrix
 
 class PlotCamera(object):
 
@@ -9,8 +10,8 @@ class PlotCamera(object):
     min_ortho_dist = 100.0
     max_ortho_dist = 10000.0
 
-    _default_dist = 10.0
-    _default_ortho_dist = 1000.0
+    _default_dist = 12.0
+    _default_ortho_dist = 1200.0
 
     def __init__(self, window, ortho = False):
         self._dist = 0.0
@@ -24,30 +25,24 @@ class PlotCamera(object):
             self._dist = self._default_dist
         self.init_rot_matrix()
 
-    def get_matrix(self):
-        m = (c_float*16)()
-        glGetFloatv(GL_MODELVIEW_MATRIX, m)
-        return m
-
     def init_rot_matrix(self):
         glPushMatrix()
         glLoadIdentity()
-        self._rot = self.get_matrix()
+        self._rot = get_matrix()
         glPopMatrix()
 
     def mult_rot_matrix(self, rot):
         glPushMatrix()
-        glLoadIdentity()
-        glMultMatrixf(rot)
+        glLoadMatrixf(rot)
         glMultMatrixf(self._rot)
-        self._rot = self.get_matrix()
+        self._rot = get_matrix()
         glPopMatrix()
 
     def setup_projection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         if self.ortho:
-            # yep, pseudo ortho (don't tell anyone)
+            # yep, this is pseudo ortho (don't tell anyone)
             gluPerspective(0.3, float(self.window.width) / float(self.window.height), self.min_ortho_dist-0.5, self.max_ortho_dist+0.5)
         else:
             gluPerspective(30.0, float(self.window.width) / float(self.window.height), self.min_dist-0.5, self.max_dist+0.5)
