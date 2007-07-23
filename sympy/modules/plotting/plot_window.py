@@ -19,6 +19,7 @@ class PlotWindow(ManagedWindow):
         self.antialiasing = antialiasing
         self.ortho = ortho
         self._calculating = False
+        self.camera = None
 
         window_args['caption'] = title
         super(PlotWindow, self).__init__(**window_args)
@@ -43,6 +44,11 @@ class PlotWindow(ManagedWindow):
             glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
 
         self.camera.setup_projection()
+
+    def on_resize(self, w, h):
+        super(PlotWindow, self).on_resize(w, h)
+        if self.camera != None:
+            self.camera.setup_projection()
 
     def setup_polygon_mode(self):
         if self.wireframe:

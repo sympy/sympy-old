@@ -1,8 +1,8 @@
 from pyglet.gl import *
 from plot_object import PlotObject
 from plot_function import PlotFunction
-"""from pyglet import font
-from util import billboard_matrix"""
+from pyglet import font
+from util import billboard_matrix
 
 class BoundingBox(PlotObject):
     
@@ -10,20 +10,18 @@ class BoundingBox(PlotObject):
                  line_color=(0.7,0.75,0.8),
                  fill_color=(0.97,0.97,0.98),
                  cull_front=True,
-                 show_labels=True):
+                 show_labels=False):
+
         self.x_min, self.x_max = 0.0, 0.0
         self.y_min, self.y_max = 0.0, 0.0
         self.z_min, self.z_max = 0.0, 0.0
-
-        if not cull_front and fill_color != None:
-            raise Exception("Bounding Box: cull_front must = True if fill_color != None.")
 
         self.line_color = line_color
         self.fill_color = fill_color
         self.cull_front = cull_front
 
-        """self.show_labels = show_labels
-        self.label_font = None"""
+        self.show_labels = show_labels
+        self.label_font = None
 
     def consider_function(self, f):
         self.x_min = min([self.x_min, f.x_min])
@@ -36,24 +34,15 @@ class BoundingBox(PlotObject):
     def render(self):
         if self.x_min == self.x_max and self.y_min == self.y_max and self.z_min == self.z_max:
             return
-
-        """
-        self.start_render(True)
         if self.show_labels:
             self.render_labels()
-        self.end_render()
-        """
-
-        self.start_render(False)
         if self.fill_color != None:
             self.render_box(line=False)
         if self.line_color != None:
             self.render_box(line=True)
-        self.end_render()
 
     def start_render(self, drawing_text):
         glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT | GL_DEPTH_BUFFER_BIT)
-
         if self.cull_front:
             if not drawing_text:
                 glCullFace(GL_FRONT)
@@ -63,23 +52,33 @@ class BoundingBox(PlotObject):
     def end_render(self):
         glPopAttrib()
 
-    """
     def render_labels(self):
-        self.render_basis_labels('x', (self.x_min, self.y_min, self.z_max), (self.x_max, self.y_min, self.z_max))
-        self.render_basis_labels('y', (self.x_min, self.y_min, self.z_max), (self.x_min, self.y_max, self.z_max))
-        self.render_basis_labels('z', (self.x_min, self.y_min, self.z_min), (self.x_min, self.y_min, self.z_max))
+        self.start_render(True)
 
-    def scale_vec(self, v, r):
-        return (v[0]*r, v[1]*r, v[2]*r)
+        p = 0.2 # padding
+        px_min = self.x_min-p; px_max = self.x_max+p
+        py_min = self.y_min-p; py_max = self.y_max+p
+        pz_min = self.z_min-p; pz_max = self.z_max+p
 
-    def render_basis_labels(self, label, start, end, stride=0.25):
-        self.draw_text(str(start), self.scale_vec(start, 1.2))
-        self.draw_text(str(end), self.scale_vec(end, 1.2))
+        self.render_basis_labels(0, (self.x_min, py_min, pz_max), (self.x_max, py_min, pz_max))
+        self.render_basis_labels(1, (px_min, self.y_min, pz_max), (px_min, self.y_max, pz_max))
+        self.render_basis_labels(2, (px_max, py_min, self.z_min), (px_max, py_min, self.z_max))
 
-    def draw_text(self, text, position):
+        self.end_render()
+
+    def render_basis_labels(self, axis, start, end, stride=0.25):
+        color = [.25,.25,.25,1]
+        color[axis] = .75
+        color = tuple(color)
+        self.draw_text(str(start[axis]), start, color)
+        self.draw_text(str(end[axis]), end, color)
+
+    def draw_text(self, text, position, color):
         if self.label_font == None:
-            self.label_font = font.load('Arial', 18, bold=True, italic=False)
-        label = font.Text(self.label_font, text, color=(0,0,0,1), halign=font.Text.CENTER)
+            #size = 18
+            size = 10
+            self.label_font = font.load('Arial', size, bold=True, italic=False)
+        label = font.Text(self.label_font, text, color=color, halign=font.Text.CENTER)
 
         glPushMatrix()
         glTranslatef(*position)
@@ -88,9 +87,10 @@ class BoundingBox(PlotObject):
         glColor4f(0,0,0,0)
         label.draw()
         glPopMatrix()
-    """
 
     def render_box(self, line=True):
+        self.start_render(False)
+
         if line:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
             glColor3f(*self.line_color)
@@ -137,3 +137,5 @@ class BoundingBox(PlotObject):
         glVertex3f(self.x_min, self.y_max, self.z_min)
 
         glEnd()
+
+        self.end_render()

@@ -58,6 +58,13 @@ class PlotCamera(object):
         mat = get_spherical_rotatation(p1, p2, self.window.width, self.window.height, sensitivity)
         if mat != None: self.mult_rot_matrix(mat)
 
+    def euler_rotate(self, angle, x, y, z):
+        glPushMatrix()
+        glLoadMatrixf(self._rot)
+        glRotatef(angle, x, y, z)
+        self._rot = get_matrix()
+        glPopMatrix()
+
     def zoom_relative(self, clicks, sensitivity):
         
         if self.ortho:

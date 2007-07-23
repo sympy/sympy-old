@@ -13,6 +13,11 @@ def billboard_matrix():
     Removes rotational components of
     current matrix so that primitives
     are always drawn facing the viewer.
+
+    |1|0|0|x|
+    |0|1|0|x|
+    |0|0|1|x| (x means left unchanged)
+    |x|x|x|x|
     """
     m = get_matrix()
     m[0] =1;m[1] =0;m[2] =0

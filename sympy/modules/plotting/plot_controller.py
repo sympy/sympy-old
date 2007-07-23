@@ -15,6 +15,9 @@ class PlotController(object):
                 
                 key.RIGHT:'right',
                 key.D:'right',
+
+                key.Q:'z_left',
+                key.E:'z_right',
                 
                 key.UP:'up',
                 key.W:'up',
@@ -41,6 +44,8 @@ class PlotController(object):
                 'right':False,
                 'up':False,
                 'down':False,
+                'z_left':False,
+                'z_right':False,
                 'zoom_in':False, 
                 'zoom_out':False,
                 'modify_sensitivity':False,
@@ -62,12 +67,19 @@ class PlotController(object):
         if self.action['up']: dy += 1
 
         if dx != 0 or dy != 0:
-            dx = float(dx) * dt * 100.0 # yep, a magic number
             dy = float(dy) * dt * 100.0
+            dx = float(dx) * dt * 100.0
 
             p1 = (self.window.width/2, self.window.height/2)
             p2 = ( p1[0] + dx, p1[1] + dy )
             self.window.camera.spherical_rotate(p1, p2, self.get_key_sensitivity())
+
+        ex = 0
+        if self.action['z_left']: ex -= 1
+        if self.action['z_right']: ex += 1
+
+        if ex != 0:
+            self.window.camera.euler_rotate(ex*dt*10.0*self.get_key_sensitivity(), 0, 0, 1)
 
         return True
 
