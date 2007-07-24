@@ -1,3 +1,0 @@
-I created this logo and permit its free use on the same terms as the rest of Sympy's code and documentation.
-
-Fredrik Johansson
