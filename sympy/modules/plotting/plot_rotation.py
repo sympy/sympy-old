@@ -21,7 +21,7 @@ def get_sphere_mapping(x, y, width, height):
     y = min([max([y,0]), height])
 
     sr = sqrt( (width/2)**2 + (height/2)**2 )
-    sr *= 1.5
+    #sr *= 1.5
     sx = ( (x - width/2)  / sr )
     sy = ( (y - height/2) / sr )
 

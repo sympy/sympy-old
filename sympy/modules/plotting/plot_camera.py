@@ -15,6 +15,7 @@ class PlotCamera(object):
 
     def __init__(self, window, ortho = False):
         self._dist = 0.0
+        self._x, self._y = 0.0, 0.0
         self._rot = None
     
         self.window = window
@@ -50,7 +51,7 @@ class PlotCamera(object):
 
     def apply_transformation(self):
         glLoadIdentity()
-        glTranslatef(0.0, 0.0, -self._dist)
+        glTranslatef(self._x, self._y, -self._dist)
         if self._rot != None:
             glMultMatrixf(self._rot)
 
@@ -79,3 +80,7 @@ class PlotCamera(object):
         new_dist = (self._dist - dist_d)
         if (clicks < 0 and new_dist < max_dist) or new_dist > min_dist:
             self._dist = new_dist
+
+    def translate(self, dx, dy, sensitivity):
+        self._x += dx*sensitivity/200.0
+        self._y += dy*sensitivity/200.0
