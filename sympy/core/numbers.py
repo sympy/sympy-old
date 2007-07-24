@@ -313,7 +313,7 @@ def _parse_rational(s):
 def _load_decimal(d):
     """Create Rational from a Decimal instance"""
 
-class Rational(Number):
+class _Rational(Number):
     """Represents integers and rational numbers (p/q) of any size.
 
     Thanks to support of long ints in Python.
@@ -343,32 +343,33 @@ class Rational(Number):
     """
 
     def __init__(self,*args):
-        Basic.__init__(self,
-                       is_real = True,
-                       is_commutative = True,
-                       )
-        if len(args)==1:
-            if isinstance(args[0], str):
-                p, q = _parse_rational(args[0])
-            else:
-                p = args[0]
-                q = 1
-        elif len(args)==2:
-            p = args[0]
-            q = args[1]
-        else:
-            raise "invalid number of arguments"
-        assert (isinstance(p, int) or isinstance(p, long)) and \
-               (isinstance(q, int) or isinstance(q, long))
-        assert q != 0
-        s = sign(p)*sign(q)
-        p = abs(p)
-        q = abs(q)
-        c = self.gcd(p,q)
-        self.p = p/c*s
-        self.q = q/c
-        self._args = [self.p,self.q] # needed by .hash and others. we should move [p,q] to _args
-                        # and then create properties p and q
+        if not self._is_fixed:
+          Basic.__init__(self,
+                         is_real = True,
+                         is_commutative = True,
+                         )
+          if len(args)==1:
+              if isinstance(args[0], str):
+                  p, q = _parse_rational(args[0])
+              else:
+                  p = args[0]
+                  q = 1
+          elif len(args)==2:
+              p = args[0]
+              q = args[1]
+          else:
+              raise "invalid number of arguments"
+          assert (isinstance(p, int) or isinstance(p, long)) and \
+                 (isinstance(q, int) or isinstance(q, long))
+          assert q != 0
+          s = sign(p)*sign(q)
+          p = abs(p)
+          q = abs(q)
+          c = self.gcd(p,q)
+          self.p = p/c*s
+          self.q = q/c
+          self._args = [self.p,self.q] # needed by .hash and others. we should move [p,q] to _args
+                          # and then create properties p and q
 
     def sign(self):
         return sign(self.p)*sign(self.q)
@@ -530,6 +531,35 @@ class Rational(Number):
     @property
     def is_nonpositive(self):
         return self.p <= 0
+
+def _cache_rationals():
+    Rational._one = Rational(1,1)
+    Rational._one._is_fixed = True
+    Rational._zero = Rational(0,1)
+    Rational._zero._is_fixed = True
+    Rational._minusone = Rational(-1,1)
+    Rational._minusone._is_fixed = True
+    Rational._cached = True
+  
+class Rational(_Rational):
+  _one = None
+  _zero = None
+  _minusone = None
+  _cached = False
+  def __init__(self,*args):
+    return _Rational.__init__(self, *args)
+  def __new__(cls, *args, **kwds):
+    if len(args)==1 and not isinstance(args[0], str):
+      if not Rational._cached: _cache_rationals()
+      if args[0] == 1:
+        return Rational._one
+      elif args[0] == 0:
+        return Rational._zero
+      elif args[0] == -1:
+        return Rational._minusone
+    x = _Rational.__new__(Rational,*args,**kwds)
+    x._is_fixed = False
+    return x
 
 class Constant(Number):
     """Mathematical constant abstract class.
